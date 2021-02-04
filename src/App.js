@@ -1,19 +1,9 @@
-import gql from 'graphql-tag';
-import { ApolloProvider, Query } from 'react-apollo';
-import client from './client';
-
-const ME = gql`
-  query me {
-    user(login: "ryuji-ito-0222") {
-      name
-      avatarUrl
-    }
-  }
-`;
+import { Query } from 'react-apollo';
+import { ME } from './graphql';
 
 const App = () => {
   return (
-    <ApolloProvider client={client}>
+    <>
       <div>Hello GraphQL</div>
 
       <Query query={ME}>
@@ -24,12 +14,12 @@ const App = () => {
           return (
             <div>
               {data.user.name}
-              <img src={data.user.avatarUrl} alt="" />
+              <img src={data.user.avatarUrl} alt="私のロゴ画像" width={100} />
             </div>
           );
         }}
       </Query>
-    </ApolloProvider>
+    </>
   );
 };
 
