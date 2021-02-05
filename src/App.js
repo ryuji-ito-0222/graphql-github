@@ -39,6 +39,15 @@ const App = () => {
                   ? 'Repository'
                   : 'Repositories'}
               </h2>
+              <ul>
+                {data.search.edges.map(({ node }) => (
+                  <li>
+                    <a href={node.url} target="_blank" rel="noreferrer">
+                      {node.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </>
           );
         }}
