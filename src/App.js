@@ -12,6 +12,15 @@ const DEFAULT_STATE = {
   query: 'フロントエンドエンジニア',
 };
 
+const StarButton = ({ node }) => {
+  return (
+    <button type="button">
+      {node.stargazers.totalCount} -{' '}
+      {node.stargazers.totalCount === 1 ? 'star' : 'stars'}
+    </button>
+  );
+};
+
 const App = () => {
   const [value, setValue] = useState(DEFAULT_STATE);
   const { query, first, after, before, last } = value;
@@ -73,6 +82,8 @@ const App = () => {
                     >
                       {node.name}
                     </a>
+                    &nbsp;
+                    <StarButton node={node} />
                   </li>
                 ))}
               </ul>
