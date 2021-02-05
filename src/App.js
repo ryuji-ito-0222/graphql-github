@@ -20,6 +20,26 @@ const StarButton = ({ node, query, first, after, before, last }) => {
         onClick={() => {
           addOrRemoveStar({
             variables: { input: { starrableId: node.id } },
+            update: (store, { data: { addStar, removeStar } }) => {
+              const { starrable } = addStar || removeStar;
+              console.log(starrable);
+              const data = store.readQuery({
+                query: SEARCH_REPOSITORIES,
+                variables: { query, first, after, before, last },
+              });
+              const edges = data.search.edges;
+              const newEdges = edges.map(edge => {
+                if (edge.node.id === node.id) {
+                  const { totalCount } = edge.node.stargazers;
+                  const diff = starrable.viewerHasStarred ? -1 : 1;
+                  const newTotalCount = totalCount + diff;
+                  edge.node.stargazers.totalCount = newTotalCount;
+                }
+                return edge;
+              });
+              data.search.edges = newEdges;
+              store.writeQuery({ query: SEARCH_REPOSITORIES, data });
+            },
           });
         }}
       >
@@ -30,17 +50,7 @@ const StarButton = ({ node, query, first, after, before, last }) => {
     );
   };
   return (
-    <Mutation
-      mutation={node.viewerHasStarred ? REMOVE_STAR : ADD_STAR}
-      refetchQueries={mutationResult => {
-        return [
-          {
-            query: SEARCH_REPOSITORIES,
-            variables: { query, first, after, before, last },
-          },
-        ];
-      }}
-    >
+    <Mutation mutation={node.viewerHasStarred ? REMOVE_STAR : ADD_STAR}>
       {addOrRemoveStar => <StarStatus addOrRemoveStar={addOrRemoveStar} />}
     </Mutation>
   );
@@ -85,7 +95,6 @@ const App = () => {
         {({ loading, error, data }) => {
           if (loading) return 'Loading...';
           if (error) return `Error ${error.message}`;
-          console.log(data.search);
           return (
             <>
               <h2>
