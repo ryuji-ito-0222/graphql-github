@@ -12,7 +12,7 @@ const DEFAULT_STATE = {
   query: 'フロントエンドエンジニア',
 };
 
-const StarButton = ({ node }) => {
+const StarButton = ({ node, query, first, after, before, last }) => {
   const StarStatus = ({ addOrRemoveStar }) => {
     return (
       <button
@@ -30,7 +30,17 @@ const StarButton = ({ node }) => {
     );
   };
   return (
-    <Mutation mutation={node.viewerHasStarred ? REMOVE_STAR : ADD_STAR}>
+    <Mutation
+      mutation={node.viewerHasStarred ? REMOVE_STAR : ADD_STAR}
+      refetchQueries={mutationResult => {
+        return [
+          {
+            query: SEARCH_REPOSITORIES,
+            variables: { query, first, after, before, last },
+          },
+        ];
+      }}
+    >
       {addOrRemoveStar => <StarStatus addOrRemoveStar={addOrRemoveStar} />}
     </Mutation>
   );
@@ -62,8 +72,6 @@ const App = () => {
       before: search.pageInfo.startCursor,
     });
   };
-
-  console.log(query);
 
   return (
     <>
@@ -98,7 +106,7 @@ const App = () => {
                       {node.name}
                     </a>
                     &nbsp;
-                    <StarButton node={node} />
+                    <StarButton node={node} {...value} />
                   </li>
                 ))}
               </ul>
