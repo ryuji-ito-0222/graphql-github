@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Query } from 'react-apollo';
-import { ME, SEARCH_REPOSITORIES } from './graphql';
+import { SEARCH_REPOSITORIES } from './graphql';
 
 const DEFAULT_STATE = {
   first: 5,
@@ -29,8 +29,18 @@ const App = () => {
         {({ loading, error, data }) => {
           if (loading) return 'Loading...';
           if (error) return `Error ${error.message}`;
-          console.log(data);
-          return <div></div>;
+          console.log(data.search);
+          return (
+            <>
+              <h2>
+                GitHub Repositories Search Results -{' '}
+                {data.search.repositoryCount}
+                {data.search.repositoryCount === 1
+                  ? 'Repository'
+                  : 'Repositories'}
+              </h2>
+            </>
+          );
         }}
       </Query>
     </>
