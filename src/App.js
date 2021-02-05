@@ -25,6 +25,17 @@ const App = () => {
       ...DEFAULT_STATE,
       first: PER_PAGE,
       after: search.pageInfo.endCursor,
+      last: null,
+      before: null,
+    });
+  };
+  const goPrevious = search => {
+    setValue({
+      ...DEFAULT_STATE,
+      first: null,
+      after: null,
+      last: PER_PAGE,
+      before: search.pageInfo.startCursor,
     });
   };
 
@@ -65,6 +76,11 @@ const App = () => {
                   </li>
                 ))}
               </ul>
+              {data.search.pageInfo.hasPreviousPage && (
+                <button type="button" onClick={() => goPrevious(data.search)}>
+                  Previous
+                </button>
+              )}
               {data.search.pageInfo.hasNextPage && (
                 <button type="button" onClick={() => goNext(data.search)}>
                   Next
