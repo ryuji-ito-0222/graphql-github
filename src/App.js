@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { Query } from 'react-apollo';
-import { SEARCH_REPOSITORIES } from './graphql';
+import { Mutation, Query } from 'react-apollo';
+import { ADD_STAR, SEARCH_REPOSITORIES } from './graphql';
 
 const PER_PAGE = 5;
 
@@ -13,12 +13,26 @@ const DEFAULT_STATE = {
 };
 
 const StarButton = ({ node }) => {
+  const StarStatus = ({ addStar }) => {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          addStar({
+            variables: { input: { starrableId: node.id } },
+          });
+        }}
+      >
+        {node.stargazers.totalCount} -{' '}
+        {node.stargazers.totalCount === 1 ? 'star' : 'stars'} |{' '}
+        {node.viewerHasStarred ? 'Yes' : 'No'}
+      </button>
+    );
+  };
   return (
-    <button type="button">
-      {node.stargazers.totalCount} -{' '}
-      {node.stargazers.totalCount === 1 ? 'star' : 'stars'} |{' '}
-      {node.viewerHasStarred ? 'Yes' : 'No'}
-    </button>
+    <Mutation mutation={ADD_STAR}>
+      {addStar => <StarStatus addStar={addStar} />}
+    </Mutation>
   );
 };
 
