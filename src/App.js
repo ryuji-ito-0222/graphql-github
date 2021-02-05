@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Query } from 'react-apollo';
 import { ME, SEARCH_REPOSITORIES } from './graphql';
 
-const VARIABLES = {
+const DEFAULT_STATE = {
   first: 5,
   after: null,
   last: null,
@@ -11,10 +11,17 @@ const VARIABLES = {
 };
 
 const App = () => {
-  const [value, setValue] = useState(VARIABLES);
+  const [value, setValue] = useState(DEFAULT_STATE);
   const { query, first, after, before, last } = value;
+  const handleChange = useCallback(e => {
+    setValue({ ...DEFAULT_STATE, query: e.target.value });
+  }, []);
+  console.log(query);
   return (
     <>
+      <form>
+        <input type="text" value={query} onChange={handleChange} />
+      </form>
       <Query
         query={SEARCH_REPOSITORIES}
         variables={{ query, first, after, before, last }}
