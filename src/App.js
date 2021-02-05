@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { createRef, useCallback, useState } from 'react';
 import { Mutation, Query } from 'react-apollo';
 import { ADD_STAR, REMOVE_STAR, SEARCH_REPOSITORIES } from './graphql';
 
@@ -9,7 +9,7 @@ const DEFAULT_STATE = {
   after: null,
   last: null,
   before: null,
-  query: 'フロントエンドエンジニア',
+  query: '',
 };
 
 const StarButton = ({ node, query, first, after, before, last }) => {
@@ -59,10 +59,7 @@ const StarButton = ({ node, query, first, after, before, last }) => {
 const App = () => {
   const [value, setValue] = useState(DEFAULT_STATE);
   const { query, first, after, before, last } = value;
-
-  const handleChange = useCallback(e => {
-    setValue({ ...DEFAULT_STATE, query: e.target.value });
-  }, []);
+  const ref = createRef();
 
   const goNext = search => {
     setValue({
@@ -83,10 +80,16 @@ const App = () => {
     });
   };
 
+  const handleSubmit = e => {
+    e.preventDefault();
+    setValue({ ...DEFAULT_STATE, query: ref.current.value });
+  };
+
   return (
     <>
-      <form>
-        <input type="text" value={query} onChange={handleChange} />
+      <form onSubmit={handleSubmit} style={{ display: 'flex' }}>
+        <input type="text" ref={ref} />
+        <button type="submit">検索</button>
       </form>
       <Query
         query={SEARCH_REPOSITORIES}
