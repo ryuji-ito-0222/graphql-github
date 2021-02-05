@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Mutation, Query } from 'react-apollo';
-import { ADD_STAR, SEARCH_REPOSITORIES } from './graphql';
+import { ADD_STAR, REMOVE_STAR, SEARCH_REPOSITORIES } from './graphql';
 
 const PER_PAGE = 5;
 
@@ -13,12 +13,12 @@ const DEFAULT_STATE = {
 };
 
 const StarButton = ({ node }) => {
-  const StarStatus = ({ addStar }) => {
+  const StarStatus = ({ addOrRemoveStar }) => {
     return (
       <button
         type="button"
         onClick={() => {
-          addStar({
+          addOrRemoveStar({
             variables: { input: { starrableId: node.id } },
           });
         }}
@@ -30,8 +30,8 @@ const StarButton = ({ node }) => {
     );
   };
   return (
-    <Mutation mutation={ADD_STAR}>
-      {addStar => <StarStatus addStar={addStar} />}
+    <Mutation mutation={node.viewerHasStarred ? REMOVE_STAR : ADD_STAR}>
+      {addOrRemoveStar => <StarStatus addOrRemoveStar={addOrRemoveStar} />}
     </Mutation>
   );
 };
