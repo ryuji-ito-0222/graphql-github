@@ -16,7 +16,8 @@ const StarButton = ({ node }) => {
   return (
     <button type="button">
       {node.stargazers.totalCount} -{' '}
-      {node.stargazers.totalCount === 1 ? 'star' : 'stars'}
+      {node.stargazers.totalCount === 1 ? 'star' : 'stars'} |{' '}
+      {node.viewerHasStarred ? 'Yes' : 'No'}
     </button>
   );
 };
