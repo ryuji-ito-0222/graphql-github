@@ -2,8 +2,10 @@ import { useCallback, useState } from 'react';
 import { Query } from 'react-apollo';
 import { SEARCH_REPOSITORIES } from './graphql';
 
+const PER_PAGE = 5;
+
 const DEFAULT_STATE = {
-  first: 5,
+  first: PER_PAGE,
   after: null,
   last: null,
   before: null,
@@ -13,10 +15,21 @@ const DEFAULT_STATE = {
 const App = () => {
   const [value, setValue] = useState(DEFAULT_STATE);
   const { query, first, after, before, last } = value;
+
   const handleChange = useCallback(e => {
     setValue({ ...DEFAULT_STATE, query: e.target.value });
   }, []);
+
+  const goNext = search => {
+    setValue({
+      ...DEFAULT_STATE,
+      first: PER_PAGE,
+      after: search.pageInfo.endCursor,
+    });
+  };
+
   console.log(query);
+
   return (
     <>
       <form>
@@ -41,13 +54,22 @@ const App = () => {
               </h2>
               <ul>
                 {data.search.edges.map(({ node }) => (
-                  <li>
-                    <a href={node.url} target="_blank" rel="noreferrer">
+                  <li key={node.id}>
+                    <a
+                      href={node.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       {node.name}
                     </a>
                   </li>
                 ))}
               </ul>
+              {data.search.pageInfo.hasNextPage && (
+                <button type="button" onClick={() => goNext(data.search)}>
+                  Next
+                </button>
+              )}
             </>
           );
         }}
